@@ -1,0 +1,12 @@
+legend('Beta-10', 'Beta-20', 'Beta-40', 'Beta-80', 'Beta-160','Poisson-10', 'Poisson-20', 'Poisson-40', 'Poisson-80', 'Poisson-160')
+xlabel("Number of Channels")
+
+legend('10','20','40','80', '160')
+xlabel("Step size in second")
+set(gca,'fontsize',22)  % Set it to times
+set(gca,'fontname','times')  % Set it to times
+set(gca,'XTickLabel',a,'FontName','Times','fontsize',22)
+
+title("Packet Loss Rate");
+title("Normalized Throughput");
+title("Normalized Load");
