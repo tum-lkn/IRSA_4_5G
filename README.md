@@ -17,7 +17,13 @@ Scripts:
 
 - sampleIrsaScript.m is a sample script for IRSA.
 
+
+
 ------------------------------------------------------------------------------
+The following flow chart introduces introduction of each function.
+
+![Function Flow Chart](https://github.com/tum-lkn/IRSA_4_5G/blob/master/FlowChart.jpg)
+
 
 Functions:
 
