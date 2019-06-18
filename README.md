@@ -1,12 +1,14 @@
-Multi-Channel Adaptation of IRSA
+The simulation code used in the paper "System Level Integration of Irregular Repetition Slotted ALOHA for Industrial IoT in 5G New Radio" by H. Murat Gürsu, M. Cagatay Moroglu, Mikhail Vilgelm, Federico Clazzer, Wolfgang Kellerer for the PIMRC 2019 Istanbul.
+
+Firstly we explain the re-used code.
 
 IRSA algorithm is taken from https://github.com/afcuttin/irsa, which includes 
 the files: LICENSE, generateTwins.m, irsa.m, sampleIrsaScript.m and sic.m.
 
 Functions:
 
-- irsa.m calculates the normalized load,the normalized throughput and Packet Loss 
-Rate by using single channel, with a given parameters  "sourceNumber, randomAccessFrameLength, packetReadyProb, maxRepetitionRate, simulationTime, maxIter".
+- irsa.m calculates the normalized load,the normalized throughput and packet loss 
+Rate by using single channel, with given parameters "sourceNumber, randomAccessFrameLength, packetReadyProb, maxRepetitionRate, simulationTime, maxIter".
 Note: We updated this function by adding two more degree distribution.
 
 - GenerateTwins.m return the MAC frame includes twins.
@@ -20,31 +22,30 @@ Scripts:
 
 
 ------------------------------------------------------------------------------
-The following flow chart introduces introduction of each function.
+Secondly the following introduces the simulator we developped for NR integration. The flow chart introduces introduction of each function.
 
 ![Function Flow Chart](https://github.com/tum-lkn/IRSA_4_5G/blob/master/FlowChart.jpg)
 
 
 Functions:
 
-- multichannelIRSA.c: In this function, each user randomly selects a channel, he uses, out of ChannelNumber usable channels. Then number of users in each channel i% found and all performance metrics in each channel are calculated. Then we find average values of these performance metrics for whole system.
+- multichannelIRSA.c: In this function, each user randomly selects a channel out of ChannelNumber usable channels. The IRSA simulation is run for each channel separately. The performance metrics from all channels are averaged over all channels.
 
-- irsa_beta.m: This function uses multichannelIRSA.c to simulate multiple channel IRSA during the period of one Random Access Frame (RAF). We first created the beta distribution based on the reference [21] in the conference paper, then we discretize this  distribution based on the given step size (steps). For each channel number from 1 to maxChannelNumber and given parameters, this function calculates the average normalized Load, normalized Throughput, and PLR vectors. So, there is no optimization in this case, and FIXED channel number is used throughout the simulation time (in all time-steps). NOTE: Channel number is fixed during this 10 second!!!!
+- irsa_beta.m: This function investigates the time based behavior of arrivals for MC-IRSA. At each time instant it uses multichannelIRSA.c to simulate multiple channel IRSA during the period of one multichannel IRSA-frame. The beta distribution used in sumulations is based on the reference [21] in the manuscript. This distribution is discretized with a selected time step. Lastly, the average normalized Load, normalized Throughput, and PLR vectors are calculated over different time-instances. FIXED number of channels is used throughout the simulation. 
 
-- irsa_poisson.m: This function uses multichannelIRSA.c to simulate multiple channel IRSA during the period of one Random Access Frame (RAF). We first find the number of active users in each discrete time-step based on the poisson distribution. For each channel number from 1 to maxChannelNumber and given parameters, this function calculates the average Load, TP, and PLR vectors. So, there is no optimization in this case, and FIXED channel number is used throughout the frame length (in all time-steps). NOTE: Channel number is fixed during this 10 second!!!!
 
-- optimize_numberOfChannel.m: This function gives the optimum number of channel with given number of Active Users, randomAccessFrameLength, and degree distribution under the constraints of maxChannelNumber and Packet Loss Rate of 0.1.
+- irsa_poisson.m: This function is same as irsa_beta.m but using Poisson distribution instead of Beta distribution.
 
-- optimize_numberOfChannel_2.m: This function is almost same with the function "optimize_numberOfChannel.m", which gives the optimum number of channel with given number of Active Users, randomAccessFrameLength, and degree distribution under the constraints of maxChannelNumber and Packet Loss Rate of 0.1. This function gives the normalized Load, normalized Throughput and Packet Loss Rate as additional outputs when the optimum channel number is used. This function is written to take some insights about dynamics.
 
-- irsa_beta_different_channel.m: In this function, we simulate multiple channel IRSA during the period of one Random Access Frame (RAF). We first created the beta distribution based on the reference [21] in the conference paper, then we discretize this distribution based on the given step size (steps). Then we calculate expected number of users in each discrete time-step, we find the optimum number of channels with this expected number of users by using the function "optimize_numberOfChannel.m" again in each this time-step. After finding the optimum channel number, each user dices if they are active or not in this specific time-step. Thereafter, we're calling the "multichannelIRSA.m" function to find the performance metrics %in this specific time-step. After finding all performence metrics of all time-steps, we're averaging them to find the performence metrics of whole frame. NOTE: Channel number is varying from time-step to time-step!!!!
+- optimize_numberOfChannel.m: This function calculates the optimum number of channel for a given number of users, randomAccessFrameLength, and degree distribution under the constraints of maxChannelNumber and Packet Loss Rate of 0.1 for MC-IRSA.
 
-- Direct_Beta.m: In this function, we simulate the IRSA with exact Beta distribution. We discretize the distribution, and then take the expected value in each time step to find the active user in this time step. This function gives the performance metrics.
+- optimize_numberOfChannel_2.m: This function is similar to the function "optimize_numberOfChannel.m". This function is for for AMC-IRSA.
+
+- irsa_beta_different_channel.m: This function investigates the time based behavior of arrivals for AMC-IRSA. At each time instant it uses multichannelIRSA.c to simulate multiple channel IRSA during the period of one multichannel IRSA-frame. The beta distribution used in sumulations is based on the reference [21] in the manuscript. This distribution is discretized with a selected time step. Lastly, the average normalized Load, normalized Throughput, and PLR vectors are calculated over different time-instances. FIXED number of channels is used throughout the simulation. 
 
 Scripts:
 
-- Multichannel.m: A sample script to run the function "multichannelIRSA.m", which gives
-%the change of the performance metrics by increasing number of channel.
+- Multichannel.m: A sample script to run the function "multichannelIRSA.m", which gives the change in the performance metrics by increasing number of channel.
 
 - Beta_dist.m: This is a sample script to calculate the performance of IRSA with the Beta distribution with the help of function "irsa_beta.m", which uses the fixed number of channel throughout the whole simulation time.
 
